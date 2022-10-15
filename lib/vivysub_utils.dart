@@ -1,9 +1,18 @@
 library vivysub_utils;
 
+class Section {
+  String? name;
+  List body;
+
+  Section({required this.name, required this.body});
+
+  Map toJson() => {'name': name, 'body': 'test'};
+}
+
 class AssParser {
   late String _content;
 
-  late final List _sections = [];
+  late final List<Section> _sections = [];
   late final List _comments = [];
   late final List _metadata = [];
 
@@ -20,17 +29,20 @@ class AssParser {
       int startIndex = currentSection.end;
 
       var nextIndex = key + 1;
-      if (nextIndex < sectionsMap.length - 1) {
+      if (nextIndex <= sectionsMap.length - 1) {
         nextSection = rawSections.elementAt(nextIndex);
       }
 
       var lines = _content.substring(startIndex, nextSection?.start);
 
-      _sections.add(
-        {"name": currentSection.group(0), "body": _parseSection(lines)},
+      var section = Section(
+        name: currentSection.group(0),
+        body: _parseSection(lines),
       );
 
-      for (var element in _sections.toList().elementAt(0)['body']) {
+      _sections.add(section);
+
+      for (var element in _sections.toList().elementAt(0).body) {
         if (element['type'] != 'comment') {
           _metadata.add(element);
         }
@@ -77,7 +89,7 @@ class AssParser {
         continue;
       }
 
-      if (key == 'Dialogue' && formatValue.isNotEmpty) {
+      if (formatValue.isNotEmpty) {
         var dialogueValue = {};
 
         var props = value.split(',').toList().asMap();
@@ -106,15 +118,22 @@ class AssParser {
     return result;
   }
 
+  _getSectionByName(String name) {
+    final section = _sections.where((element) => element.name!.contains(name));
+
+    return section.elementAt(0).body;
+  }
+
   getSections() {
     return _sections;
   }
 
   getDialogs() {
-    final dialogs = _sections
-        .where((element) => (element['name'] as String).contains('Events'));
+    return _getSectionByName('Events');
+  }
 
-    return dialogs.elementAt(0)['body'];
+  getStyles() {
+    return _getSectionByName('Styles');
   }
 
   getComments() {

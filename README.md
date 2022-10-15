@@ -10,4 +10,5 @@ final metadata = assParser.getMetadata();
 final comments = assParser.getComments();
 final dialogs = assParser.getDialogs();
 final sections = assParser.getSections();
+final sections = assParser.getStyles();
 ```

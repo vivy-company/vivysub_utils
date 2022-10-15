@@ -1,3 +1,8 @@
+## 0.0.4
+
+- subtitle parser improvements
+- style parser
+
 ## 0.0.3
 
 - subtitle parser improvements

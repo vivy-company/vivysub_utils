@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 import 'dart:io';
@@ -30,11 +31,14 @@ void main() async {
   });
 
   test('get sections', () {
-    final sections = assParser.getSections();
+    List sections = assParser.getSections();
   });
 
   test('get dialogs', () {
     final dialogs = assParser.getDialogs();
-    print(dialogs);
+  });
+
+  test('get styles', () {
+    final styles = assParser.getStyles();
   });
 }
