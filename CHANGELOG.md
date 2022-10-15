@@ -1,3 +1,7 @@
+## 0.0.5
+
+- moved AssParser to a separate file
+
 ## 0.0.4
 
 - subtitle parser improvements
