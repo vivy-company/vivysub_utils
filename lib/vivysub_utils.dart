@@ -40,6 +40,8 @@ class AssParser {
 
   _parseSection(String lines) {
     List result = [];
+    Map formatValue = {};
+
     for (var line in lines.split('\n')) {
       if (line.trim().isEmpty) {
         continue;
@@ -65,11 +67,29 @@ class AssParser {
       String value = parts.skip(1).join(':').trim();
 
       if (key == 'Format') {
-        var formatValue = value.split(',');
+        formatValue = value.split(',').toList().asMap();
 
         result.add({
           "key": key,
-          "value": formatValue,
+          "value": value.split(',').toList(),
+        });
+
+        continue;
+      }
+
+      if (key == 'Dialogue' && formatValue.isNotEmpty) {
+        var dialogueValue = {};
+
+        var props = value.split(',').toList().asMap();
+
+        props.forEach((key, value) {
+          var propKey = formatValue[key];
+          dialogueValue[propKey] = value.isNotEmpty ? value : null;
+        });
+
+        result.add({
+          "key": key,
+          "value": dialogueValue,
         });
 
         continue;

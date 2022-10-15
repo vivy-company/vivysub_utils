@@ -35,5 +35,6 @@ void main() async {
 
   test('get dialogs', () {
     final dialogs = assParser.getDialogs();
+    print(dialogs);
   });
 }
