@@ -90,10 +90,29 @@ class AssParser {
       if (formatValue.isNotEmpty) {
         var dialogueValue = {};
 
-        var props = value.split(',').toList().asMap();
+        Map props = value.split(',').toList().asMap();
+        var validValues = props.length == formatValue.length;
+
+        if (!validValues) {
+          List data = [];
+
+          var temp = '';
+          props.forEach((key, value) {
+            if (key < formatValue.length - 1) {
+              data.add(value);
+            } else {
+              temp = temp.isNotEmpty ? '$temp,$value' : value;
+            }
+          });
+
+          data.add(temp);
+
+          props = data.toList().asMap();
+        }
 
         props.forEach((key, value) {
           var propKey = formatValue[key];
+
           dialogueValue[propKey] = value.isNotEmpty ? value : null;
         });
 

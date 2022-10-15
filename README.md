@@ -11,4 +11,9 @@ final comments = assParser.getComments();
 final dialogs = assParser.getDialogs();
 final sections = assParser.getSections();
 final sections = assParser.getStyles();
+
+
+final assStringify = AssStringify(sections: sections);
+String fileContent = assStringify.export();
+
 ```

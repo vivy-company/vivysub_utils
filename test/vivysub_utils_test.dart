@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vivysub_utils/ass_stringify.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 import 'dart:io';
 
@@ -40,5 +41,14 @@ void main() async {
 
   test('get styles', () {
     final styles = assParser.getStyles();
+  });
+
+  test('ass stringify', () {
+    final sections = assParser.getSections();
+    final assStringify = AssStringify(sections: sections);
+
+    final result = assStringify.export();
+
+    expect(result, content);
   });
 }
