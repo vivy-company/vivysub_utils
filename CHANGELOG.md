@@ -1,3 +1,7 @@
+## 0.0.6
+
+- added draft for subtitle editor implementation;
+
 ## 0.0.5
 
 - moved AssParser to a separate file

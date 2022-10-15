@@ -1,6 +1,6 @@
 name: vivysub_utils
 description: .ass/ssa subtitle tools, made for vivysub.app
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/vivy-company/vivysub_utils
 
 environment:
@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  undo: ^1.4.0
 
 dev_dependencies:
   flutter_test:
