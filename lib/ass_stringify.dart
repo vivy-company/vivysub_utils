@@ -12,7 +12,7 @@ final stringifyDescriptor = {
     return '; ${comment['value']}';
   },
   "formatSpec": (formatSpec, format) {
-    return formatSpec['key'] + ': ' + formatSpec['value'].join(',');
+    return formatSpec['key'] + ': ' + formatSpec['value'].join(', ');
   },
   "properties": (properties, format) {
     return properties['key'] +

@@ -1,20 +1,10 @@
-# VivySub Utils
+# How to use SubtitleEditor
 
-Parse and encode .ass/ssa subtitles
+This class provide functionality to edit your parsed .ass subtitle file.
 
 ```dart
 final content = await File('test.ass').readAsString();
-final assParser = AssParser(content: content);
-
-final metadata = assParser.getMetadata();
-final comments = assParser.getComments();
-final dialogs = assParser.getDialogs();
-final sections = assParser.getSections();
-final sections = assParser.getStyles();
-
-
-final assStringify = AssStringify(sections: sections);
-String fileContent = assStringify.export();
+final assParser = AssParser(content: content)
 
 final editor = SubtitleEditor(
   parser: assParser,
@@ -45,5 +35,4 @@ editor.redo();
 final Entity selectedDialog = editor.getDialog(dialogId);
 
 print(jsonEncode(selectedDialog));
-
 ```

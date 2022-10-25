@@ -79,11 +79,11 @@ class AssParser {
       String value = parts.skip(1).join(':').trim();
 
       if (key == 'Format') {
-        formatValue = value.split(',').toList().asMap();
+        formatValue = value.split(',').map((e) => e.trim()).toList().asMap();
 
         result.add({
-          "key": key,
-          "value": value.split(',').toList(),
+          "key": key.trim(),
+          "value": value.split(',').map((e) => e.trim()).toList(),
         });
 
         continue;
@@ -92,7 +92,7 @@ class AssParser {
       if (formatValue.isNotEmpty) {
         var dialogueValue = {};
 
-        Map props = value.split(',').toList().asMap();
+        Map props = value.trim().split(',').toList().asMap();
         var validValues = props.length == formatValue.length;
 
         if (!validValues) {
@@ -119,7 +119,7 @@ class AssParser {
         });
 
         result.add({
-          "key": key,
+          "key": key.trim(),
           "value": dialogueValue,
         });
 
@@ -127,20 +127,20 @@ class AssParser {
       }
 
       result.add({
-        "key": key,
+        "key": key.trim(),
         "value": value,
       });
 
       continue;
     }
 
-    return result
-        .map(
-          (e) => Entity(
-            value: e,
-          ),
-        )
-        .toList();
+    return result.map(
+      (e) {
+        return Entity(
+          value: e,
+        );
+      },
+    ).toList();
   }
 
   _getSectionByName(String name) {

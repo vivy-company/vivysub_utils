@@ -5,9 +5,11 @@ import 'package:uuid/uuid.dart';
 import 'package:vivysub_utils/types.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 
+var uuid = const Uuid();
+
 class SubtitleEditor {
   final Map _state = {};
-  final ChangeStack _history = ChangeStack();
+  final ChangeStack _history = ChangeStack(limit: 500);
   final ListQueue<ActionStack> _actionsStack = ListQueue();
   final int maxConcurrentTasks = 5;
 
@@ -74,11 +76,11 @@ class SubtitleEditor {
     required dynamic value,
     required String id,
   }) {
-    final Entity oldValue = _state[type][id];
+    final Entity oldValue = _state[type][id].clone();
 
     _history.add(
       Change(
-        Map.from(oldValue.toJson()),
+        oldValue,
         () {
           _actionsStack.add(
             ActionStack(
@@ -101,11 +103,11 @@ class SubtitleEditor {
   }
 
   remove({required ActionType type, required String id}) {
-    final Entity oldValue = _state[type][id];
+    final Entity oldValue = _state[type][id].clone();
 
     _history.add(
       Change(
-        Map.from(oldValue.toJson()),
+        oldValue,
         () {
           _actionsStack.add(
             ActionStack(
@@ -120,7 +122,7 @@ class SubtitleEditor {
           _startExecution();
         },
         (val) {
-          _state[type][id] = Entity(value: val);
+          _state[type][id] = val;
         },
       ),
     );
@@ -130,8 +132,16 @@ class SubtitleEditor {
     return _state[ActionType.dialog];
   }
 
+  getDialog(String id) {
+    return _state[ActionType.dialog][id];
+  }
+
   getStyles() {
     return _state[ActionType.style];
+  }
+
+  getStyle(String id) {
+    return _state[ActionType.style][id];
   }
 
   getComments() {
@@ -144,6 +154,10 @@ class SubtitleEditor {
 
   getMetadata() {
     return _state[ActionType.metadata];
+  }
+
+  getMetadataKey(String id) {
+    return _state[ActionType.metadata][id];
   }
 
   getState() {
@@ -203,15 +217,17 @@ class SubtitleEditor {
   }
 
   _objectify(ActionType type, List section) {
-    var uuid = const Uuid();
-
     for (var entity in section) {
       final id = uuid.v4();
       if (!_state.containsKey(type)) {
         _state[type] = {};
       }
 
-      _state[type][id] = Entity(value: entity);
+      if (entity is Entity) {
+        _state[type][id] = entity.clone();
+      } else {
+        _state[type][id] = Entity(value: entity).clone();
+      }
     }
   }
 

@@ -42,22 +42,21 @@ class ActionStack {
 }
 
 class Entity {
-  late dynamic value;
+  final dynamic value;
 
-  Entity({required this.value});
+  const Entity({required this.value});
+
+  clone() {
+    return Entity(value: toJson());
+  }
 
   Map toJson() {
-    // if (value is Map) {
-    //   print('Map');
-    //   print(value);
-    // }
-
-    return value;
+    return Map.from(value);
   }
 }
 
 abstract class BaseEntity {
   Entity export() {
-    return Entity(value: '');
+    return const Entity(value: '');
   }
 }

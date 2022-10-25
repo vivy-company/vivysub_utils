@@ -1,3 +1,7 @@
+## 0.0.8
+
+- added implementation for SubtitleEditor
+
 ## 0.0.7
 
 - added AssStringify class, to stringify AssParser to .ass file content;
