@@ -1,4 +1,7 @@
-final content = await File('test.ass').readAsString();
+import 'dart:io';
+import 'package:vivysub_utils/vivysub_utils.dart';
+
+final content = File('test.ass').readAsStringSync();
 final assParser = AssParser(content: content);
 
 final editor = SubtitleEditor(
@@ -8,9 +11,9 @@ final editor = SubtitleEditor(
   },
 );
 
-
 final dialogs = editor.getDialogs();
-final dialogId = metadata.keys.elementAt(1);
+
+final dialogId = dialogs.keys.elementAt(1);
 final existingDialog = dialogs[dialogId];
 
 final dialog = SubDialog(
@@ -23,6 +26,7 @@ editor.update(
   id: dialogId,
   value: dialog,
 );
+
 
 editor.undo();
 editor.redo();

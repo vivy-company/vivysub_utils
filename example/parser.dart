@@ -1,4 +1,8 @@
-final content = await File('test.ass').readAsString();
+import 'dart:io';
+
+import 'package:vivysub_utils/ass_parser.dart';
+
+final content = File('test.ass').readAsStringSync();
 final assParser = AssParser(content: content);
 
 final metadata = assParser.getMetadata();

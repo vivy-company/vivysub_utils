@@ -1,3 +1,7 @@
+## 0.0.10
+
+- updated examples
+
 ## 0.0.9
 
 - added examples
