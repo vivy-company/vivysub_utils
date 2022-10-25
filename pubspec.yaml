@@ -1,6 +1,6 @@
 name: vivysub_utils
 description: .ass/ssa subtitle tools, made for vivysub.app
-version: 0.0.10
+version: 0.0.11
 homepage: https://github.com/vivy-company/vivysub_utils
 
 environment:
