@@ -51,4 +51,33 @@ void main() async {
 
     expect(result, content);
   });
+
+  test('subtitle editor add', () {
+    final editor = SubtitleEditor(parser: assParser, onChange: print);
+
+    editor.add(type: ActionType.dialog, value: 'test');
+  });
+
+  test('subtitle editor state', () {
+    final editor = SubtitleEditor(parser: assParser, onChange: print);
+
+    final dialogs = editor.getDialogs();
+    print(jsonEncode(dialogs));
+  });
+
+  test('subtitle editor update', () {
+    final editor = SubtitleEditor(
+        parser: assParser,
+        onChange: (String subtitle) {
+          expect(subtitle, 'update');
+        });
+
+    editor.update(type: ActionType.metadata, value: 'test', id: '1');
+  });
+
+  test('subtitle editor remove', () {
+    final editor = SubtitleEditor(parser: assParser, onChange: print);
+
+    editor.remove(type: ActionType.comments, id: 'test');
+  });
 }
