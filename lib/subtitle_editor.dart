@@ -2,60 +2,8 @@ import 'dart:collection';
 
 import 'package:undo/undo.dart';
 import 'package:uuid/uuid.dart';
-import 'package:vivysub_utils/ass_parser.dart';
-
-enum ActionType {
-  style,
-  dialog,
-  metadata,
-  comments,
-}
-
-enum ActionStackType {
-  add,
-  update,
-  remove,
-}
-
-class Action {
-  late ActionType type;
-  late dynamic value;
-  late String? id;
-
-  Action({required this.type, this.value, this.id});
-
-  Map toJson() {
-    return {
-      'type': type,
-      'value': value,
-      'id': id,
-    };
-  }
-}
-
-class ActionStack {
-  late ActionStackType type;
-  late Action action;
-
-  ActionStack({required this.type, required this.action});
-
-  Map toJson() {
-    return {
-      'type': type,
-      'action': action,
-    };
-  }
-}
-
-class Entity {
-  late dynamic value;
-
-  Entity({required this.value});
-
-  Map toJson() {
-    return value;
-  }
-}
+import 'package:vivysub_utils/types.dart';
+import 'package:vivysub_utils/vivysub_utils.dart';
 
 class SubtitleEditor {
   final Map _state = {};
@@ -65,15 +13,15 @@ class SubtitleEditor {
 
   int runningTasks = 0;
 
-  late Function(String subtitle) _onChange;
+  late Function(String subtitle)? _onChange;
 
-  SubtitleEditor({required AssParser parser, required onChange}) {
+  SubtitleEditor({required AssParser parser, onChange}) {
     _onChange = onChange;
 
     _objectify(ActionType.dialog, parser.getDialogs());
     _objectify(ActionType.metadata, parser.getMetadata());
     _objectify(ActionType.comments, parser.getComments());
-    _objectify(ActionType.style, parser.getSections());
+    _objectify(ActionType.style, parser.getStyles());
   }
 
   undo() {
@@ -112,14 +60,13 @@ class SubtitleEditor {
               action: Action(type: type, value: value),
             ),
           );
+          _startExecution();
         },
         (val) {
           // undo
         },
       ),
     );
-
-    _startExecution();
   }
 
   update({
@@ -127,9 +74,11 @@ class SubtitleEditor {
     required dynamic value,
     required String id,
   }) {
+    final Entity oldValue = _state[type][id];
+
     _history.add(
       Change(
-        _state,
+        Map.from(oldValue.toJson()),
         () {
           _actionsStack.add(
             ActionStack(
@@ -141,20 +90,22 @@ class SubtitleEditor {
               ),
             ),
           );
+
+          _startExecution();
         },
         (val) {
-          // undo
+          _state[type][id] = val;
         },
       ),
     );
-
-    _startExecution();
   }
 
   remove({required ActionType type, required String id}) {
+    final Entity oldValue = _state[type][id];
+
     _history.add(
       Change(
-        _state,
+        Map.from(oldValue.toJson()),
         () {
           _actionsStack.add(
             ActionStack(
@@ -165,14 +116,14 @@ class SubtitleEditor {
               ),
             ),
           );
+
+          _startExecution();
         },
         (val) {
-          // undo
+          _state[type][id] = Entity(value: val);
         },
       ),
     );
-
-    _startExecution();
   }
 
   getDialogs() {
@@ -187,6 +138,10 @@ class SubtitleEditor {
     return _state[ActionType.comments];
   }
 
+  getComment(String id) {
+    return _state[ActionType.comments][id];
+  }
+
   getMetadata() {
     return _state[ActionType.metadata];
   }
@@ -195,11 +150,57 @@ class SubtitleEditor {
     return _state;
   }
 
-  _export() {
-    return 'test';
+  export() {
+    return _export();
   }
 
-  _actionExecutor(ActionStack action) {}
+  _export() {
+    final Section metadata = _sectionize(
+      '[Script Info]',
+      Map.from(
+        {
+          ..._state[ActionType.comments],
+          ..._state[ActionType.metadata],
+        },
+      ),
+    );
+
+    final styles = _sectionize(
+      '[V4 Styles]',
+      Map.from(
+        _state[ActionType.style],
+      ),
+    );
+
+    final dialogs = _sectionize(
+      '[Events]',
+      Map.from(
+        _state[ActionType.dialog],
+      ),
+    );
+
+    return AssStringify(sections: [metadata, styles, dialogs]).export();
+  }
+
+  _actionExecutor(ActionStack action) {
+    final id = action.action.id;
+    final type = action.action.type;
+    BaseEntity? value = action.action.value;
+
+    switch (action.type) {
+      case ActionStackType.update:
+        _state[type][id] = value!.export();
+
+        break;
+      case ActionStackType.remove:
+        final Map entities = _state[type];
+        entities.remove(id);
+
+        break;
+      default:
+        throw Exception('Action is not supported');
+    }
+  }
 
   _objectify(ActionType type, List section) {
     var uuid = const Uuid();
@@ -214,6 +215,18 @@ class SubtitleEditor {
     }
   }
 
+  _sectionize(String name, Map<String, Entity> entities) {
+    final List<Entity> result = entities.entries
+        .map(
+          (entry) => entry.value,
+        )
+        .toList();
+
+    var section = Section(body: result, name: name);
+
+    return section;
+  }
+
   void _startExecution() async {
     if (runningTasks == maxConcurrentTasks || _actionsStack.isEmpty) {
       return;
@@ -224,7 +237,9 @@ class SubtitleEditor {
 
       await _actionExecutor(_actionsStack.removeFirst());
 
-      _onChange(_export());
+      if (_onChange != null) {
+        _onChange!(_export());
+      }
 
       runningTasks--;
     }

@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vivysub_utils/ass_stringify.dart';
+import 'package:vivysub_utils/entities.dart';
+import 'package:vivysub_utils/types.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 import 'dart:io';
 
@@ -52,32 +53,64 @@ void main() async {
     expect(result, content);
   });
 
-  test('subtitle editor add', () {
+  test('subtitle editor comments', () {
     final editor = SubtitleEditor(parser: assParser, onChange: print);
 
-    editor.add(type: ActionType.dialog, value: 'test');
-  });
+    Map comments = editor.getComments();
 
-  test('subtitle editor state', () {
-    final editor = SubtitleEditor(parser: assParser, onChange: print);
+    final firstKey = comments.keys.elementAt(0);
+    var firstItem = comments[firstKey];
 
-    final dialogs = editor.getDialogs();
-    print(jsonEncode(dialogs));
-  });
+    var updatedSub = SubComment(
+      initial: firstItem,
+      message: 'New comment',
+    );
 
-  test('subtitle editor update', () {
-    final editor = SubtitleEditor(
-        parser: assParser,
-        onChange: (String subtitle) {
-          expect(subtitle, 'update');
-        });
+    editor.update(
+      type: ActionType.comments,
+      id: firstKey,
+      value: updatedSub,
+    );
 
-    editor.update(type: ActionType.metadata, value: 'test', id: '1');
-  });
+    expect(
+      jsonEncode(
+        editor.getComment(firstKey),
+      ),
+      jsonEncode(updatedSub.export()),
+    );
 
-  test('subtitle editor remove', () {
-    final editor = SubtitleEditor(parser: assParser, onChange: print);
+    editor.undo();
 
-    editor.remove(type: ActionType.comments, id: 'test');
+    expect(
+      jsonEncode(
+        editor.getComment(firstKey),
+      ),
+      jsonEncode(firstItem),
+    );
+
+    editor.redo();
+
+    expect(
+      jsonEncode(
+        editor.getComment(firstKey),
+      ),
+      jsonEncode(updatedSub.export()),
+    );
+
+    editor.remove(type: ActionType.comments, id: firstKey);
+
+    expect(
+      editor.getComment(firstKey),
+      null,
+    );
+
+    editor.undo();
+
+    expect(
+      jsonEncode(
+        editor.getComment(firstKey),
+      ),
+      '{"type":"comment","value":"New comment"}',
+    );
   });
 }

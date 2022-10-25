@@ -1,4 +1,5 @@
 import 'package:vivysub_utils/ass_parser.dart';
+import 'package:vivysub_utils/types.dart';
 
 pickValues(value, format) {
   return format.map((key) {
@@ -34,7 +35,12 @@ class AssStringify {
     final head = section.name;
     dynamic format;
 
-    var body = section.body.map((dynamic descriptor) {
+    var body = section.body.map((Entity entity) {
+      var descriptor = entity.value;
+      if (descriptor is Entity) {
+        descriptor = descriptor.toJson();
+      }
+
       final method = (descriptor['type'] == 'comment')
           ? 'comment'
           : (descriptor['key'] == 'Format')

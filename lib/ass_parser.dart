@@ -1,10 +1,12 @@
+import 'package:vivysub_utils/types.dart';
+
 class Section {
   String? name;
-  List body;
+  List<Entity> body;
 
   Section({required this.name, required this.body});
 
-  Map toJson() => {'name': name, 'body': 'test'};
+  Map toJson() => {'name': name, 'body': body};
 }
 
 class AssParser {
@@ -41,14 +43,14 @@ class AssParser {
       _sections.add(section);
 
       for (var element in _sections.toList().elementAt(0).body) {
-        if (element['type'] != 'comment') {
+        if (element.value['type'] != 'comment') {
           _metadata.add(element);
         }
       }
     });
   }
 
-  _parseSection(String lines) {
+  List<Entity> _parseSection(String lines) {
     List result = [];
     Map formatValue = {};
 
@@ -132,7 +134,13 @@ class AssParser {
       continue;
     }
 
-    return result;
+    return result
+        .map(
+          (e) => Entity(
+            value: e,
+          ),
+        )
+        .toList();
   }
 
   _getSectionByName(String name) {
