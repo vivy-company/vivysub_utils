@@ -1,10 +1,5 @@
-# How to use SubtitleEditor
-
-This class provide functionality to edit your parsed .ass subtitle file.
-
-```dart
 final content = await File('test.ass').readAsString();
-final assParser = AssParser(content: content)
+final assParser = AssParser(content: content);
 
 final editor = SubtitleEditor(
   parser: assParser,
@@ -35,4 +30,4 @@ editor.redo();
 final Entity selectedDialog = editor.getDialog(dialogId);
 
 print(jsonEncode(selectedDialog));
-```
+

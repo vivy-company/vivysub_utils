@@ -1,3 +1,7 @@
+## 0.0.9
+
+- added examples
+
 ## 0.0.8
 
 - added implementation for SubtitleEditor
