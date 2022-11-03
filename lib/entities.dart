@@ -1,7 +1,6 @@
-import 'package:vivysub_utils/types.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 
-class SubDialog implements BaseEntity {
+class SubDialog extends BaseEntity {
   late Entity _initial;
 
   late String? style;
@@ -76,7 +75,7 @@ class SubDialog implements BaseEntity {
   }
 }
 
-class SubComment implements BaseEntity {
+class SubComment extends BaseEntity {
   final String? message;
   late Entity _initial;
 
@@ -97,7 +96,7 @@ class SubComment implements BaseEntity {
   }
 }
 
-class SubMetadata implements BaseEntity {
+class SubMetadata extends BaseEntity {
   final String? key;
   final String? value;
   late Entity _initial;
@@ -124,7 +123,7 @@ class SubMetadata implements BaseEntity {
   }
 }
 
-class SubStyle implements BaseEntity {
+class SubStyle extends BaseEntity {
   late final Entity _initial;
   final String? name;
   final String? fontname;

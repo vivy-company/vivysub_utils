@@ -216,9 +216,9 @@ void main() async {
         parser: assParser,
         onChange: (String value) {},
       );
-      Map metadata = editor.getStyles();
-      final firstKey = metadata.keys.firstWhere((element) {
-        final s = metadata[element].value['value'];
+      Map styles = editor.getStyles();
+      final firstKey = styles.keys.firstWhere((element) {
+        final s = styles[element].value['value'];
         if (s is Map) {
           return s['Name'] == 'DefaultVCD';
         }
@@ -226,7 +226,7 @@ void main() async {
         return false;
       });
 
-      final firstItem = metadata[firstKey];
+      final firstItem = styles[firstKey];
       final Entity first = firstItem.clone();
 
       final style = SubStyle(
@@ -374,6 +374,287 @@ void main() async {
           editor.getDialog(firstKey),
         ),
         jsonEncode(first),
+      );
+    },
+  );
+
+  test(
+    'subtitle editor add dialog',
+    () {
+      final editor = SubtitleEditor(
+        parser: assParser,
+        onChange: (String value) {},
+      );
+
+      Map dialogs = editor.getDialogs();
+
+      final firstKey = dialogs.keys.firstWhere((element) {
+        final s = dialogs[element].value['value'];
+
+        if (s is Map) {
+          return true;
+        }
+
+        return false;
+      });
+
+      final firstItem = dialogs[firstKey];
+
+      final Entity first = firstItem.clone();
+
+      final dialog = SubDialog(
+        initial: first,
+        text: 'Вітаю Віві!',
+      );
+
+      editor.add(
+        type: ActionType.dialog,
+        value: dialog,
+        id: dialog.id,
+      );
+
+      expect(
+        jsonEncode(
+          editor.getDialog(dialog.id),
+        ),
+        jsonEncode(dialog.export()),
+      );
+
+      editor.undo();
+
+      expect(
+        editor.getDialog(dialog.id),
+        null,
+      );
+
+      editor.redo();
+
+      expect(
+        jsonEncode(
+          editor.getDialog(dialog.id),
+        ),
+        jsonEncode(dialog.export()),
+      );
+
+      editor.remove(type: ActionType.dialog, id: dialog.id);
+
+      expect(
+        editor.getDialog(dialog.id),
+        null,
+      );
+
+      editor.undo();
+
+      expect(
+        jsonEncode(
+          editor.getDialog(dialog.id),
+        ),
+        jsonEncode(dialog.export()),
+      );
+    },
+  );
+
+  test(
+    'subtitle editor add comment',
+    () {
+      final editor = SubtitleEditor(
+        parser: assParser,
+        onChange: (String value) {},
+      );
+
+      Map comments = editor.getComments();
+
+      final firstKey = comments.keys.first;
+
+      final firstItem = comments[firstKey];
+
+      final Entity first = firstItem.clone();
+
+      final comment = SubComment(
+        initial: first,
+        message: 'Вітаю Віві!',
+      );
+
+      editor.add(
+        type: ActionType.comments,
+        value: comment,
+        id: comment.id,
+      );
+
+      expect(
+        jsonEncode(
+          editor.getComment(comment.id),
+        ),
+        jsonEncode(comment.export()),
+      );
+
+      editor.undo();
+
+      expect(
+        editor.getComment(comment.id),
+        null,
+      );
+
+      editor.redo();
+
+      expect(
+        jsonEncode(
+          editor.getComment(comment.id),
+        ),
+        jsonEncode(comment.export()),
+      );
+
+      editor.remove(type: ActionType.comments, id: comment.id);
+
+      expect(
+        editor.getComment(comment.id),
+        null,
+      );
+
+      editor.undo();
+
+      expect(
+        jsonEncode(
+          editor.getComment(comment.id),
+        ),
+        jsonEncode(comment.export()),
+      );
+    },
+  );
+
+  test(
+    'subtitle editor add metadata',
+    () {
+      final editor = SubtitleEditor(
+        parser: assParser,
+        onChange: (String value) {},
+      );
+
+      Map metadata = editor.getMetadata();
+
+      final firstKey = metadata.keys.first;
+
+      final firstItem = metadata[firstKey];
+
+      final Entity first = firstItem.clone();
+
+      final metadataEntry =
+          SubMetadata(initial: first, key: 'test', value: 'Vivy');
+
+      editor.add(
+        type: ActionType.metadata,
+        value: metadataEntry,
+        id: metadataEntry.id,
+      );
+
+      expect(
+        jsonEncode(
+          editor.getMetadataKey(metadataEntry.id),
+        ),
+        jsonEncode(metadataEntry.export()),
+      );
+
+      editor.undo();
+
+      expect(
+        editor.getMetadataKey(metadataEntry.id),
+        null,
+      );
+
+      editor.redo();
+
+      expect(
+        jsonEncode(
+          editor.getMetadataKey(metadataEntry.id),
+        ),
+        jsonEncode(metadataEntry.export()),
+      );
+
+      editor.remove(type: ActionType.metadata, id: metadataEntry.id);
+
+      expect(
+        editor.getMetadataKey(metadataEntry.id),
+        null,
+      );
+
+      editor.undo();
+
+      expect(
+        jsonEncode(
+          editor.getMetadataKey(metadataEntry.id),
+        ),
+        jsonEncode(metadataEntry.export()),
+      );
+    },
+  );
+
+  test(
+    'subtitle editor add style',
+    () {
+      final editor = SubtitleEditor(
+        parser: assParser,
+        onChange: (String value) {},
+      );
+
+      Map styles = editor.getStyles();
+      final firstKey = styles.keys.firstWhere((element) {
+        final s = styles[element].value['value'];
+        if (s is Map) {
+          return s['Name'] == 'DefaultVCD';
+        }
+
+        return false;
+      });
+
+      final firstItem = styles[firstKey];
+
+      final Entity first = firstItem.clone();
+
+      final style = SubStyle(initial: first, name: 'Vivy');
+
+      editor.add(
+        type: ActionType.style,
+        value: style,
+        id: style.id,
+      );
+
+      expect(
+        jsonEncode(
+          editor.getStyle(style.id),
+        ),
+        jsonEncode(style.export()),
+      );
+
+      editor.undo();
+
+      expect(
+        editor.getStyle(style.id),
+        null,
+      );
+
+      editor.redo();
+
+      expect(
+        jsonEncode(
+          editor.getStyle(style.id),
+        ),
+        jsonEncode(style.export()),
+      );
+
+      editor.remove(type: ActionType.style, id: style.id);
+
+      expect(
+        editor.getStyle(style.id),
+        null,
+      );
+
+      editor.undo();
+
+      expect(
+        jsonEncode(
+          editor.getStyle(style.id),
+        ),
+        jsonEncode(style.export()),
       );
     },
   );

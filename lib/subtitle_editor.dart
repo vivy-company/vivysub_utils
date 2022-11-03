@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:undo/undo.dart';
 import 'package:uuid/uuid.dart';
-import 'package:vivysub_utils/types.dart';
 import 'package:vivysub_utils/vivysub_utils.dart';
 
 var uuid = const Uuid();
@@ -51,21 +50,23 @@ class SubtitleEditor {
   add({
     required ActionType type,
     required dynamic value,
+    required String id,
   }) {
     _history.add(
       Change(
-        _state,
+        id,
         () {
           _actionsStack.add(
             ActionStack(
               type: ActionStackType.add,
-              action: Action(type: type, value: value),
+              action: Action(type: type, value: value, id: id),
             ),
           );
           _startExecution();
         },
         (val) {
-          // undo
+          final Map entities = _state[type];
+          entities.remove(id);
         },
       ),
     );
@@ -209,6 +210,10 @@ class SubtitleEditor {
       case ActionStackType.remove:
         final Map entities = _state[type];
         entities.remove(id);
+
+        break;
+      case ActionStackType.add:
+        _state[type][id] = value!.export();
 
         break;
       default:

@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 enum ActionType {
   style,
   dialog,
@@ -56,6 +58,8 @@ class Entity {
 }
 
 abstract class BaseEntity {
+  String id = const Uuid().v4();
+
   Entity export() {
     return const Entity(value: '');
   }
