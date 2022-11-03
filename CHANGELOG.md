@@ -1,4 +1,4 @@
-## 0.0.2
+## 0.2.0
 
 - added implementations for add functionality in SubtitleEditor class
 - writted tests for add feature;
